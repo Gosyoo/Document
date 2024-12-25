@@ -64,3 +64,17 @@ dotnet run
 [Launch的官方简介](https://vscode.js.cn/docs/editor/debugging)
 
 [Tasks的官方简介](https://vscode.js.cn/docs/editor/tasks)
+
+
+
+# Vfox相关
+
+对于unity3d中使用的dotnet版本
+
+- 在vscode中，暂无法使用vfox对dotnet版本进行管理
+- vscode中需要使用c# Dev Kit工具包，该工具包不识别vfox设置的全局变量
+- 无法获取到全局的dotnet版本
+
+解决方案：使用官方的dotnet版本进行安装
+
+[官方dotnet版本下载地址](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/sdk-8.0.404-windows-x64-installer)
