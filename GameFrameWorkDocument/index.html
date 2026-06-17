@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>GameFramework 学习文档</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'default', flowchart:{ curve:'basis' }});</script>
+<style>
+:root{
+  --c-bg:#f7f9fc; --c-card:#fff; --c-pri:#3b82f6; --c-pri-d:#1e40af;
+  --c-acc:#f59e0b; --c-text:#1f2937; --c-sub:#6b7280; --c-line:#e5e7eb;
+  --c-code-bg:#1e293b; --c-code-text:#e2e8f0;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--c-bg);color:var(--c-text);line-height:1.7}
+.layout{display:flex;min-height:100vh}
+nav.side{width:260px;background:#0f172a;color:#cbd5e1;padding:20px 16px;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+nav.side h2{color:#fff;font-size:18px;margin:0 0 16px;border-bottom:1px solid #334155;padding-bottom:10px}
+nav.side ul{list-style:none;padding:0;margin:0}
+nav.side li{margin:4px 0}
+nav.side a{color:#cbd5e1;text-decoration:none;display:block;padding:6px 10px;border-radius:6px;font-size:14px}
+nav.side a:hover{background:#1e293b;color:#fff}
+nav.side .group-title{color:#94a3b8;font-size:12px;margin:14px 6px 6px;text-transform:uppercase;letter-spacing:1px}
+main{flex:1;padding:0 40px 60px;max-width:1100px}
+header.hero{background:linear-gradient(135deg,#3b82f6,#1e40af);color:#fff;padding:48px 40px;margin:0 -40px 30px;border-radius:0 0 20px 20px}
+header.hero h1{margin:0 0 8px;font-size:36px}
+header.hero p{margin:0;opacity:.92;font-size:16px}
+.badges{margin-top:16px}
+.badge{display:inline-block;background:rgba(255,255,255,.2);padding:4px 12px;border-radius:20px;font-size:13px;margin-right:8px}
+section{background:var(--c-card);border:1px solid var(--c-line);border-radius:12px;padding:24px 28px;margin:22px 0;box-shadow:0 2px 6px rgba(0,0,0,.03)}
+section h2{margin:0 0 16px;font-size:24px;color:var(--c-pri-d);border-left:4px solid var(--c-pri);padding-left:12px}
+section h3{font-size:18px;margin-top:24px;color:var(--c-pri-d)}
+section h4{font-size:16px;color:var(--c-text);margin-top:18px}
+p,li{font-size:15px}
+code{background:#eef2ff;color:#1e3a8a;padding:1px 6px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:13.5px}
+pre{background:var(--c-code-bg);color:var(--c-code-text);padding:16px;border-radius:8px;overflow-x:auto;font-size:13px}
+pre code{background:transparent;color:inherit;padding:0}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+th{background:#eff6ff;color:var(--c-pri-d);padding:10px 12px;text-align:left;border:1px solid var(--c-line)}
+td{padding:9px 12px;border:1px solid var(--c-line);vertical-align:top}
+tr:nth-child(even) td{background:#fafbfc}
+.tip{background:#fef3c7;border-left:4px solid var(--c-acc);padding:12px 16px;border-radius:6px;margin:14px 0}
+.warn{background:#fee2e2;border-left:4px solid #ef4444;padding:12px 16px;border-radius:6px;margin:14px 0}
+.note{background:#dbeafe;border-left:4px solid var(--c-pri);padding:12px 16px;border-radius:6px;margin:14px 0}
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:16px}
+.module-card{border:1px solid var(--c-line);border-radius:10px;padding:14px;background:#fafbfc;transition:.2s}
+.module-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.08);border-color:var(--c-pri)}
+.module-card .name{font-weight:600;color:var(--c-pri-d);font-size:15px}
+.module-card .pri{display:inline-block;background:var(--c-pri);color:#fff;padding:1px 8px;border-radius:10px;font-size:11px;margin-left:6px}
+.module-card .desc{font-size:13px;color:var(--c-sub);margin-top:6px}
+.toc-top{background:#eef2ff;padding:14px 18px;border-radius:8px;margin-bottom:20px}
+.toc-top a{color:var(--c-pri-d);margin-right:14px;text-decoration:none;font-size:14px}
+.toc-top a:hover{text-decoration:underline}
+.mermaid{background:#fff;border:1px dashed var(--c-line);border-radius:10px;padding:18px;text-align:center;margin:14px 0}
+.kbd{background:#374151;color:#fff;padding:1px 7px;border-radius:4px;font-size:12px;font-family:monospace}
+hr{border:none;border-top:1px solid var(--c-line);margin:28px 0}
+.flow-step{display:flex;align-items:flex-start;margin:10px 0}
+.flow-step .num{width:28px;height:28px;background:var(--c-pri);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0;margin-right:12px}
+.flow-step .body{flex:1}
+@media (max-width:900px){
+  .layout{flex-direction:column} nav.side{width:100%;height:auto;position:relative}
+  main{padding:0 16px 40px} header.hero{margin:0 -16px 20px;padding:30px 24px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="side">
+  <h2>📘 GameFramework</h2>
+  <div class="group-title">入门</div>
+  <ul>
+    <li><a href="#intro">项目简介</a></li>
+    <li><a href="#arch">架构总览</a></li>
+    <li><a href="#priority">模块优先级</a></li>
+  </ul>
+  <div class="group-title">核心机制</div>
+  <ul>
+    <li><a href="#core-entry">入口与模块</a></li>
+    <li><a href="#core-refpool">引用池</a></li>
+    <li><a href="#core-eventpool">事件池</a></li>
+    <li><a href="#core-taskpool">任务池</a></li>
+    <li><a href="#core-fsm">有限状态机</a></li>
+  </ul>
+  <div class="group-title">模块详解</div>
+  <ul>
+    <li><a href="#m-base">Base 基础</a></li>
+    <li><a href="#m-resource">Resource 资源</a></li>
+    <li><a href="#m-objpool">ObjectPool 对象池</a></li>
+    <li><a href="#m-procedure">Procedure 流程</a></li>
+    <li><a href="#m-fsm">Fsm 状态机</a></li>
+    <li><a href="#m-event">Event 事件</a></li>
+    <li><a href="#m-entity">Entity 实体</a></li>
+    <li><a href="#m-ui">UI 界面</a></li>
+    <li><a href="#m-scene">Scene 场景</a></li>
+    <li><a href="#m-sound">Sound 声音</a></li>
+    <li><a href="#m-network">Network 网络</a></li>
+    <li><a href="#m-download">Download 下载</a></li>
+    <li><a href="#m-webrequest">WebRequest 请求</a></li>
+    <li><a href="#m-config">Config 全局配置</a></li>
+    <li><a href="#m-datatable">DataTable 数据表</a></li>
+    <li><a href="#m-datanode">DataNode 数据结点</a></li>
+    <li><a href="#m-localization">Localization 本地化</a></li>
+    <li><a href="#m-setting">Setting 玩家设置</a></li>
+    <li><a href="#m-filesystem">FileSystem 文件系统</a></li>
+    <li><a href="#m-debugger">Debugger 调试器</a></li>
+    <li><a href="#m-utility">Utility 工具集</a></li>
+  </ul>
+  <div class="group-title">实践</div>
+  <ul>
+    <li><a href="#flow-startup">启动流程</a></li>
+    <li><a href="#flow-resource">资源加载流程</a></li>
+    <li><a href="#flow-ui">UI 打开流程</a></li>
+    <li><a href="#design">设计模式</a></li>
+    <li><a href="#path">学习路径</a></li>
+  </ul>
+</nav>
+<main>
+<header class="hero">
+  <h1>🎮 GameFramework 学习文档</h1>
+  <p>一份让你从零开始，循序渐进读懂这个游戏框架的指南</p>
+  <div class="badges">
+    <span class="badge">C# / .NET</span>
+    <span class="badge">Unity 适配层无关</span>
+    <span class="badge">22 个核心模块</span>
+    <span class="badge">作者: Jiang Yin</span>
+  </div>
+</header>
+
+<div class="toc-top">
+  <strong>📑 快速导航：</strong>
+  <a href="#intro">简介</a>
+  <a href="#arch">架构</a>
+  <a href="#priority">优先级</a>
+  <a href="#core-entry">核心机制</a>
+  <a href="#m-resource">模块详解</a>
+  <a href="#flow-startup">典型流程</a>
+  <a href="#path">学习路径</a>
+</div>
+
+<!-- ========== 项目简介 ========== -->
+<section id="intro">
+<h2>1. 项目简介</h2>
+<p><strong>GameFramework</strong> 是一个使用 <code>C#</code> 实现的、与具体游戏引擎解耦的游戏框架库（核心库），通常作为 Unity 工程中的核心层使用（配合上层适配层 <em>UnityGameFramework</em>）。它提供了游戏开发中最常用的功能模块，把复杂的资源、UI、网络、流程、事件等问题用一套统一的"模块化 + 接口驱动 + Helper 适配"模式解决。</p>
+
+<h3>项目特征</h3>
+<ul>
+  <li><strong>引擎无关</strong>：核心库不依赖 UnityEngine，所有引擎相关操作都通过 <code>IXxxHelper</code> 接口下沉到上层。</li>
+  <li><strong>接口驱动</strong>：每个模块对外暴露 <code>IXxxManager</code> 接口，内部实现 <code>internal sealed class XxxManager</code>，外部只能通过接口访问。</li>
+  <li><strong>统一生命周期</strong>：所有模块继承自 <code>GameFrameworkModule</code>，由 <code>GameFrameworkEntry</code> 统一管理 <em>注册 → 轮询 Update → 关闭 Shutdown</em>。</li>
+  <li><strong>性能至上</strong>：内置引用池(ReferencePool)、对象池(ObjectPool)、任务池(TaskPool)、事件池(EventPool)等多套池化机制，最大限度降低 GC。</li>
+  <li><strong>状态驱动</strong>：游戏流程由 <code>Procedure</code>（基于 <code>Fsm</code>）驱动，结构清晰、可测可换。</li>
+</ul>
+
+<h3>项目目录结构</h3>
+<pre><code>GameFramework/
+├── Base/             # 基础设施：引用池、事件池、任务池、链表、序列化、日志、变量、版本
+│   ├── DataProvider/      数据提供器（资源加载抽象）
+│   ├── DataStruct/        基础数据结构 (TypeNamePair)
+│   ├── EventPool/         事件池
+│   ├── Log/               日志
+│   ├── ReferencePool/     引用池
+│   ├── TaskPool/          任务池（异步任务调度）
+│   ├── Variable/          通用 Variable&lt;T&gt;
+│   └── Version/           版本号比较
+├── Config/           # 全局配置（数值/键值，区别于 DataTable）
+├── DataNode/         # 树形数据结点（运行时数据存储）
+├── DataTable/        # 配置表（行/列结构，对应 Excel）
+├── Debugger/         # 运行时调试器（窗口分组）
+├── Download/         # HTTP 下载（任务池调度，支持断点续传）
+├── Entity/           # 游戏实体管理（按 EntityGroup 分组）
+├── Event/            # 全局事件系统（基于事件池）
+├── FileSystem/       # 自定义虚拟文件系统（合包/加密）
+├── Fsm/              # 有限状态机
+├── Localization/     # 多语言本地化
+├── Network/          # 网络通信（TCP/Packet/心跳）
+├── ObjectPool/       # 对象池（Spawn/Unspawn/释放策略）
+├── Procedure/        # 游戏流程（基于 Fsm 实现）
+├── Resource/         # 资源管理（核心模块，最复杂）
+├── Scene/            # 场景管理
+├── Setting/          # 玩家本地设置（键值持久化）
+├── Sound/            # 声音（声音组/声音代理）
+├── UI/               # UI 管理（UIGroup/UIForm）
+├── Utility/          # 工具集（Json/Path/Crc/加解密/反射）
+└── WebRequest/       # HTTP Get/Post 请求
+</code></pre>
+</section>
+
+<!-- ========== 架构总览 ========== -->
+<section id="arch">
+<h2>2. 架构总览</h2>
+
+<h3>2.1 三层结构图</h3>
+<div class="mermaid">
+flowchart TB
+  subgraph U["上层：业务层 / Unity 适配层"]
+    Game["游戏业务代码<br/>(Procedure, UIForm, Entity Logic...)"]
+    UGF["UnityGameFramework<br/>(实现各 Helper 接口)"]
+  end
+  subgraph G["中间层：GameFramework (本仓库)"]
+    Entry["GameFrameworkEntry<br/>统一入口"]
+    Modules["22 个 Manager 模块"]
+    Base["基础设施<br/>引用池 / 事件池 / 任务池 / FSM / 日志"]
+  end
+  subgraph E["底层：引擎/系统"]
+    Unity["UnityEngine"]
+    System["System.IO / Net / Threading"]
+  end
+  Game --> UGF
+  UGF --> Modules
+  Modules --> Base
+  Modules -. "需要引擎能力时" .-> UGF
+  UGF --> Unity
+  Modules --> System
+</div>
+
+<h3>2.2 模块视图</h3>
+<div class="mermaid">
+flowchart LR
+  Entry((GameFrameworkEntry))
+
+  subgraph 基础层
+    RP[ReferencePool]
+    EP[EventPool]
+    TP[TaskPool]
+    Log[Log]
+  end
+
+  subgraph 控制层
+    Proc[Procedure 流程]
+    Fsm[Fsm 状态机]
+    Event[Event 事件]
+  end
+
+  subgraph 资源层
+    FS[FileSystem]
+    Res[Resource]
+    DL[Download]
+    Web[WebRequest]
+  end
+
+  subgraph 数据层
+    Cfg[Config]
+    DT[DataTable]
+    DN[DataNode]
+    Loc[Localization]
+    Set[Setting]
+  end
+
+  subgraph 表现层
+    Obj[ObjectPool]
+    Ent[Entity]
+    UI[UI]
+    Scene[Scene]
+    Snd[Sound]
+  end
+
+  subgraph 工具层
+    Net[Network]
+    Dbg[Debugger]
+    Util[Utility]
+  end
+
+  Entry --> 基础层
+  Entry --> 控制层
+  Entry --> 资源层
+  Entry --> 数据层
+  Entry --> 表现层
+  Entry --> 工具层
+
+  Proc --> Fsm
+  Ent --> Obj
+  UI --> Obj
+  Snd --> Obj
+  Res --> FS
+  Res --> DL
+  数据层 --> Res
+  Ent --> Res
+  UI --> Res
+  Scene --> Res
+  Snd --> Res
+</div>
+
+<h3>2.3 接口与实现的设计模式</h3>
+<p>所有模块都遵循同一种"对外接口 + 内部实现 + Helper 适配"的三件套模式：</p>
+<div class="mermaid">
+classDiagram
+  class IXxxManager {
+    <<interface>>
+    +Method1()
+    +Method2()
+  }
+  class XxxManager {
+    <<internal sealed>>
+    -m_Helper : IXxxHelper
+    +SetHelper(IXxxHelper)
+  }
+  class GameFrameworkModule {
+    <<abstract internal>>
+    +Priority : int
+    +Update()
+    +Shutdown()
+  }
+  class IXxxHelper {
+    <<interface>>
+  }
+  class UnityXxxHelper {
+    "Unity 工程中的实现"
+  }
+  GameFrameworkModule <|-- XxxManager
+  IXxxManager <|.. XxxManager
+  XxxManager o--&gt; IXxxHelper : 通过 SetHelper 注入
+  IXxxHelper <|.. UnityXxxHelper : 上层实现
+</div>
+<div class="tip">💡 这种设计的好处：<br>
+1) 业务代码只面向 <code>IXxxManager</code> 接口，无法误用内部 API；<br>
+2) 引擎相关行为通过 <code>IXxxHelper</code> 注入，便于替换引擎或单元测试；<br>
+3) 所有 Manager 通过 <code>GameFrameworkEntry.GetModule&lt;T&gt;()</code> 反射 + 缓存获取。</p>
+</div>
+</section>
+
+<!-- ========== 模块优先级 ========== -->
+<section id="priority">
+<h2>3. 模块优先级与生命周期</h2>
+<p>每个模块都有一个 <code>Priority</code> 整数：<strong>优先级越高的模块越先 Update，越晚 Shutdown</strong>。这保证了关键依赖的初始化顺序与销毁顺序合理。下表是源码中各模块的实际优先级：</p>
+
+<table>
+<thead><tr><th>优先级</th><th>模块</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><b>7</b></td><td>EventManager</td><td>事件分发要最先处理</td></tr>
+<tr><td><b>6</b></td><td>ObjectPoolManager</td><td>对象池服务于 Entity/UI/Sound</td></tr>
+<tr><td><b>5</b></td><td>DownloadManager</td><td>下载任务驱动</td></tr>
+<tr><td><b>4</b></td><td>FileSystemManager</td><td>虚拟文件系统</td></tr>
+<tr><td><b>3</b></td><td>ResourceManager</td><td>资源管理</td></tr>
+<tr><td><b>2</b></td><td>SceneManager</td><td>场景</td></tr>
+<tr><td><b>1</b></td><td>FsmManager</td><td>状态机轮询</td></tr>
+<tr><td><b>0</b></td><td>其他默认模块</td><td>如 Config、DataTable、Localization、UI、Sound、Entity、Network、WebRequest、Setting、Variable…</td></tr>
+<tr><td><b>-1</b></td><td>DebuggerManager</td><td>调试器最后渲染</td></tr>
+<tr><td><b>-2</b></td><td>ProcedureManager</td><td>流程在最后驱动（避免依赖未就绪）</td></tr>
+</tbody>
+</table>
+
+<div class="note">📌 <code>GameFrameworkEntry.CreateModule</code> 会按优先级<strong>降序</strong>插入到 <code>LinkedList</code>，<code>Update</code> 顺序遍历=高优先先 Update；<code>Shutdown</code> 反向遍历=高优先后 Shutdown。</div>
+
+<h3>生命周期时序</h3>
+<div class="mermaid">
+sequenceDiagram
+  participant App as Unity Main Loop
+  participant Entry as GameFrameworkEntry
+  participant Mods as 各 Module
+  App->>Entry: GetModule&lt;IEventManager&gt;()
+  Entry->>Mods: 反射创建 EventManager 并按 Priority 插入链表
+  loop 每帧
+    App->>Entry: Update(elapseSeconds, realElapseSeconds)
+    Entry->>Mods: 顺序遍历调用 Update（优先级高先执行）
+  end
+  App->>Entry: Shutdown()
+  Entry->>Mods: 反向遍历调用 Shutdown（优先级低先关闭）
+  Entry->>Entry: ReferencePool.ClearAll()
+</div>
+</section>
+
+<!-- ========== 核心机制 ========== -->
+<section id="core-entry">
+<h2>4. 核心机制详解</h2>
+
+<h3 id="core-entry-1">4.1 GameFrameworkEntry：模块系统</h3>
+<p><code>GameFrameworkEntry</code> 是一个静态类（位于 <code>Base/GameFrameworkEntry.cs</code>），它做三件事：</p>
+<ol>
+  <li><b>注册并缓存</b>所有 <code>GameFrameworkModule</code> 实例（按 Priority 排序）；</li>
+  <li>每帧统一驱动 <code>Update</code>；</li>
+  <li>退出时统一 <code>Shutdown</code>。</li>
+</ol>
+
+<h4>关键代码（已简化）：</h4>
+<pre><code>public static T GetModule&lt;T&gt;() where T : class
+{
+    Type interfaceType = typeof(T);            // 比如 IEventManager
+    if (!interfaceType.IsInterface) throw ...; // 必须传入接口
+    // 把 IXxxManager 转换成 XxxManager
+    string moduleName = $"{interfaceType.Namespace}.{interfaceType.Name.Substring(1)}";
+    Type moduleType = Type.GetType(moduleName);
+    return GetModule(moduleType) as T;         // 找不到就反射创建
+}</code></pre>
+<div class="tip">💡 <strong>命名约定</strong>：接口必须以 <code>I</code> 开头，去掉 <code>I</code> 后就是同 namespace 下的实现类名。例如 <code>GameFramework.Event.IEventManager</code> → <code>GameFramework.Event.EventManager</code>。</div>
+
+<hr>
+
+<h3 id="core-refpool">4.2 引用池 ReferencePool</h3>
+<p>引用池负责<strong>缓存可重用对象的实例</strong>，实现接口的对象会被自动缓存复用。它解决频繁 <code>new</code>/GC 的问题，是事件参数、任务、节点等高频对象的核心降耗手段。</p>
+
+<h4>使用方式</h4>
+<pre><code>// 1. 让你的类实现 IReference 接口
+public class MyEvent : GameEventArgs, IReference
+{
+    public int EventId { get; private set; }
+    public static MyEvent Create(int id)
+    {
+        var e = ReferencePool.Acquire&lt;MyEvent&gt;(); // 拿出一个
+        e.EventId = id;
+        return e;
+    }
+    public void Clear()                       // 必须实现 Clear
+    {
+        EventId = 0;
+    }
+}
+
+// 2. 用完归还
+ReferencePool.Release(myEvent);
+</code></pre>
+
+<h4>内部结构</h4>
+<div class="mermaid">
+classDiagram
+  class ReferencePool {
+    -Dictionary~Type, ReferenceCollection~ s_ReferenceCollections
+    +Acquire~T~()
+    +Release(IReference)
+    +Add~T~(int count)
+    +Remove~T~(int count)
+    +ClearAll()
+  }
+  class ReferenceCollection {
+    -Queue m_References
+    +Acquire()
+    +Release(IReference)
+  }
+  class IReference {
+    <<interface>>
+    +Clear()
+  }
+  ReferencePool *-- ReferenceCollection
+  ReferenceCollection ..> IReference
+</div>
+
+<hr>
+
+<h3 id="core-eventpool">4.3 事件池 EventPool</h3>
+<p>事件池是事件机制的核心容器，<code>EventManager</code>、<code>SoundManager</code> 内部都使用了它。它支持：</p>
+<ul>
+  <li><b>线程安全发送</b>：<code>Fire</code> 把事件入队，下一帧主线程统一分发；</li>
+  <li><b>立即发送</b>：<code>FireNow</code> 当前线程立刻分发；</li>
+  <li><b>多种模式</b>：<code>EventPoolMode.AllowNoHandler / AllowMultiHandler / AllowDuplicateHandler</code>。</li>
+</ul>
+<div class="mermaid">
+sequenceDiagram
+  participant Biz as 业务代码
+  participant Pool as EventPool
+  participant Q as 事件队列
+  participant Main as 主线程 Update
+
+  Biz->>Pool: Fire(sender, args)
+  Pool->>Q: enqueue (锁保护)
+  loop 每帧
+    Main->>Pool: Update(...)
+    Pool->>Q: dequeue all
+    Pool-->>Biz: 主线程回调 EventHandler
+  end
+  Note over Biz,Pool: FireNow 则跳过队列，直接回调
+</div>
+
+<hr>
+
+<h3 id="core-taskpool">4.4 任务池 TaskPool&lt;T&gt;</h3>
+<p>任务池是<strong>资源加载、下载、网络请求</strong>等异步任务的核心调度器。它把任务（<code>TaskBase</code>）派给空闲的代理（<code>ITaskAgent</code>）执行：</p>
+<div class="mermaid">
+flowchart LR
+  T1[TaskBase 1<br/>Priority=10]
+  T2[TaskBase 2<br/>Priority=5]
+  T3[TaskBase 3<br/>Priority=20]
+  Q{{优先级链表}}
+  A1((Agent 1))
+  A2((Agent 2))
+  A3((Agent 3))
+  T1-->Q
+  T2-->Q
+  T3-->Q
+  Q-->|StartTaskStatus.CanResume|A1
+  Q-->|StartTaskStatus.HasToWait|A2
+  Q-->|StartTaskStatus.UnknownType|A3
+  A1-->|完成 Done=true|R[(回调)]
+</div>
+<p>关键类：<code>TaskBase</code> / <code>TaskInfo</code> / <code>TaskPool</code> / <code>ITaskAgent</code> / <code>StartTaskStatus</code> / <code>TaskStatus</code></p>
+
+<hr>
+
+<h3 id="core-fsm">4.5 有限状态机 FSM</h3>
+<p>FSM 是 GameFramework 中所有"流程类"逻辑的基石，<code>Procedure</code> 模块就是基于它实现的。每个状态是一个继承自 <code>FsmState&lt;T&gt;</code> 的类：</p>
+<pre><code>public class ProcedureLogin : FsmState&lt;IProcedureManager&gt;
+{
+    protected internal override void OnEnter(IFsm&lt;IProcedureManager&gt; fsm) { ... }
+    protected internal override void OnUpdate(IFsm&lt;IProcedureManager&gt; fsm,
+        float elapseSeconds, float realElapseSeconds) { ... }
+    protected internal override void OnLeave(IFsm&lt;IProcedureManager&gt; fsm, bool isShutdown){ ... }
+}
+
+// 切换状态
+ChangeState&lt;ProcedureMain&gt;(fsm);</code></pre>
+
+<h4>FsmState 生命周期</h4>
+<div class="mermaid">
+stateDiagram-v2
+  [*] --> 已注册: CreateFsm + 添加状态
+  已注册 --> Running: Start&lt;T&gt;()
+  Running --> OnEnter
+  OnEnter --> OnUpdate
+  OnUpdate --> OnUpdate: 每帧
+  OnUpdate --> OnLeave: ChangeState
+  OnLeave --> OnEnter: 切换到新状态
+  Running --> OnDestroy: DestroyFsm
+  OnDestroy --> [*]
+</div>
+</section>
+
+<!-- ========== 模块详解 ========== -->
+<section id="m-base">
+<h2>5. 模块详解（按业务分类）</h2>
+
+<div class="module-grid">
+  <div class="module-card"><div class="name">Base<span class="pri">基础</span></div><div class="desc">引用池/事件池/任务池/链表/序列化/日志/版本，框架的"地基"</div></div>
+  <div class="module-card"><div class="name">Resource<span class="pri">P=3</span></div><div class="desc">资源管理：版本检查/更新/校验/加载/解密，单机+热更两种模式</div></div>
+  <div class="module-card"><div class="name">ObjectPool<span class="pri">P=6</span></div><div class="desc">对象池：自动释放、加锁、优先级、过期回收</div></div>
+  <div class="module-card"><div class="name">Procedure<span class="pri">P=-2</span></div><div class="desc">游戏流程：基于 FSM，串起整个游戏生命周期</div></div>
+  <div class="module-card"><div class="name">Fsm<span class="pri">P=1</span></div><div class="desc">通用有限状态机，泛型化的状态管理</div></div>
+  <div class="module-card"><div class="name">Event<span class="pri">P=7</span></div><div class="desc">全局事件总线，线程安全/立即两种模式</div></div>
+  <div class="module-card"><div class="name">Entity<span class="pri">P=0</span></div><div class="desc">实体管理：分组/显示/隐藏/查找，背后用对象池</div></div>
+  <div class="module-card"><div class="name">UI<span class="pri">P=0</span></div><div class="desc">UI 管理：UIGroup 分层、Open/Close、深度排序</div></div>
+  <div class="module-card"><div class="name">Scene<span class="pri">P=2</span></div><div class="desc">场景：异步加载/卸载/切换</div></div>
+  <div class="module-card"><div class="name">Sound<span class="pri">P=0</span></div><div class="desc">声音：声音组、声音代理、3D 声音参数</div></div>
+  <div class="module-card"><div class="name">Network<span class="pri">P=0</span></div><div class="desc">TCP 通道、Packet/Header 模型、心跳、自定义错误</div></div>
+  <div class="module-card"><div class="name">Download<span class="pri">P=5</span></div><div class="desc">HTTP 下载，断点续传，速率统计</div></div>
+  <div class="module-card"><div class="name">WebRequest<span class="pri">P=0</span></div><div class="desc">HTTP Get/Post 请求</div></div>
+  <div class="module-card"><div class="name">Config<span class="pri">P=0</span></div><div class="desc">全局键值配置（Bool/Int/Float/String）</div></div>
+  <div class="module-card"><div class="name">DataTable<span class="pri">P=0</span></div><div class="desc">数值表（行/列），对应 Excel</div></div>
+  <div class="module-card"><div class="name">DataNode<span class="pri">P=0</span></div><div class="desc">树形数据节点（运行时变量挂载）</div></div>
+  <div class="module-card"><div class="name">Localization<span class="pri">P=0</span></div><div class="desc">多语言文本</div></div>
+  <div class="module-card"><div class="name">Setting<span class="pri">P=0</span></div><div class="desc">玩家本地配置（持久化）</div></div>
+  <div class="module-card"><div class="name">FileSystem<span class="pri">P=4</span></div><div class="desc">合包虚拟文件系统</div></div>
+  <div class="module-card"><div class="name">Debugger<span class="pri">P=-1</span></div><div class="desc">调试器：窗口/分组</div></div>
+  <div class="module-card"><div class="name">Utility<span class="pri">工具</span></div><div class="desc">Json/Path/Crc32/Encryption/Marshal/Reflection</div></div>
+</div>
+
+<hr>
+
+<h3 id="m-resource">5.1 Resource 资源模块（最核心、最复杂）</h3>
+<p>这是整个框架最庞大的模块（<code>ResourceManager.cs</code> 超过 100KB，含 30+ 子文件），它要完成：</p>
+<ol>
+  <li><b>三种资源模式</b>：<code>Package</code>(单机)、<code>Updatable</code>(预下载更新)、<code>UpdatableWhilePlaying</code>(边玩边下)。</li>
+  <li><b>版本管理</b>：<code>PackageVersionList</code>/<code>UpdatableVersionList</code>/<code>LocalVersionList</code>/<code>ResourcePackVersionList</code>。</li>
+  <li><b>核心子组件</b>：<br>
+    <code>ResourceIniter</code>（首次初始化）→ <code>VersionListProcessor</code>（更新版本表）→ <code>ResourceChecker</code>（对比本地远端）→ <code>ResourceUpdater</code>（下载差异）→ <code>ResourceVerifier</code>（CRC 校验）→ <code>ResourceLoader</code>（加载到内存）。</li>
+  <li><b>异步加载</b>：通过 <code>TaskPool&lt;LoadResourceTaskBase&gt;</code> + <code>ILoadResourceAgentHelper</code> 调度。</li>
+</ol>
+<div class="mermaid">
+flowchart TB
+  Start([启动]) --> Mode{资源模式?}
+  Mode -- Package --> Init[ResourceIniter<br/>读取本包版本]
+  Mode -- Updatable --> VL[VersionListProcessor<br/>下载最新版本表]
+  VL --> Chk[ResourceChecker<br/>对比 Local vs Remote]
+  Chk --> Up[ResourceUpdater<br/>下载差异资源]
+  Up --> Ver[ResourceVerifier<br/>CRC32 校验]
+  Init --> Ready
+  Ver --> Ready[资源就绪]
+  Ready --> Load[ResourceLoader<br/>LoadAsset/Scene/Binary]
+  Load -. 任务池 .-> Agents[多个 LoadResourceAgent]
+  Agents --> Cb[(回调 LoadAssetCallbacks)]
+</div>
+
+<hr>
+
+<h3 id="m-objpool">5.2 ObjectPool 对象池</h3>
+<p>对象池是 <code>Entity / UI / Sound</code> 三大模块的"内功心法"，它的核心特性：</p>
+<ul>
+  <li>支持<b>多种对象类型</b>，每种类型一个 <code>ObjectPool&lt;T&gt;</code>。</li>
+  <li>每个对象（<code>ObjectBase</code>）有：名称、目标对象 Target、是否锁定、优先级、最近使用时间。</li>
+  <li><b>释放策略</b>：自动释放间隔(<code>AutoReleaseInterval</code>)、容量(<code>Capacity</code>)、过期时间(<code>ExpireTime</code>)、自定义过滤(<code>ReleaseObjectFilterCallback</code>)。</li>
+  <li>API：<code>Spawn / Unspawn / Register / SetLocked / Release</code>。</li>
+</ul>
+<pre><code>public abstract class ObjectBase : IReference
+{
+    public string Name; public object Target;
+    public bool Locked; public int Priority; public DateTime LastUseTime;
+    protected internal virtual void OnSpawn() { }
+    protected internal virtual void OnUnspawn() { }
+    protected internal abstract void Release(bool isShutdown);
+}</code></pre>
+
+<hr>
+
+<h3 id="m-procedure">5.3 Procedure 流程</h3>
+<p><code>Procedure</code> 模块本身代码量很少 —— 它就是一个"用 FSM 包装的流程驱动器"。</p>
+<pre><code>// 1. 流程基类
+public abstract class ProcedureBase : FsmState&lt;IProcedureManager&gt; { }
+
+// 2. 初始化流程管理器
+procedureMgr.Initialize(fsmManager,
+    new ProcedureLaunch(),
+    new ProcedureCheckVersion(),
+    new ProcedureUpdateResources(),
+    new ProcedureLogin(),
+    new ProcedureMain());
+
+// 3. 启动
+procedureMgr.StartProcedure&lt;ProcedureLaunch&gt;();</code></pre>
+<div class="tip">💡 一个典型项目通常有 8~15 个 Procedure，分别对应：启动 → 初始化 → 检查版本 → 更新资源 → 预加载 → 登录 → 主城 → 战斗 → ……</div>
+
+<hr>
+
+<h3 id="m-fsm">5.4 Fsm 状态机</h3>
+<p>支持给任意类型对象（如 怪物、玩家、流程）创建状态机：</p>
+<pre><code>IFsm&lt;Monster&gt; fsm = fsmMgr.CreateFsm&lt;Monster&gt;("MonsterAI", monster,
+    new IdleState(), new ChaseState(), new AttackState());
+fsm.Start&lt;IdleState&gt;();</code></pre>
+<p>关键能力：状态切换、共享数据 <code>SetData/GetData</code>、状态间转移由状态自身触发 <code>ChangeState&lt;T&gt;()</code>。</p>
+
+<hr>
+
+<h3 id="m-event">5.5 Event 事件</h3>
+<p>事件用整数 ID 区分，事件参数继承自 <code>GameEventArgs</code> 并实现 <code>IReference</code>：</p>
+<pre><code>// 订阅
+EventManager.Subscribe(MyEventArgs.EventId, OnMyEvent);
+// 抛出（线程安全，下一帧分发）
+EventManager.Fire(this, MyEventArgs.Create(data));
+// 立即抛出
+EventManager.FireNow(this, MyEventArgs.Create(data));</code></pre>
+
+<hr>
+
+<h3 id="m-entity">5.6 Entity 实体</h3>
+<p>Entity 用于管理"游戏世界中可显隐"的对象（怪物、子弹、特效、玩家形象等）。</p>
+<ul>
+  <li><b>EntityGroup</b>：实体分组（如 Monster/Bullet/Effect），每组一个对象池。</li>
+  <li><b>ShowEntity / HideEntity</b>：异步显示/隐藏，伴随事件参数。</li>
+  <li><b>支持依赖资源加载</b>：和 Resource 模块联动。</li>
+</ul>
+
+<hr>
+
+<h3 id="m-ui">5.7 UI 界面</h3>
+<p>UIManager 维护 <code>UIGroup</code> 列表（如 Background/Default/HUD/Top/Tooltip），每个 Group 中维护多个 UIForm：</p>
+<div class="mermaid">
+flowchart TD
+  UIM[UIManager]
+  UIM-->BG[UIGroup: Background<br/>Depth=0]
+  UIM-->DEF[UIGroup: Default<br/>Depth=10]
+  UIM-->HUD[UIGroup: HUD<br/>Depth=20]
+  UIM-->TOP[UIGroup: Top<br/>Depth=100]
+  DEF-->F1[UIForm: MainMenu]
+  DEF-->F2[UIForm: SettingsForm]
+  HUD-->F3[UIForm: HpBar]
+  TOP-->F4[UIForm: Loading]
+</div>
+<p>API：<code>OpenUIForm</code>、<code>CloseUIForm</code>、<code>RefocusUIForm</code>，每个操作都有对应的成功/失败/更新事件参数。</p>
+
+<hr>
+
+<h3 id="m-scene">5.8 Scene 场景</h3>
+<p>异步 LoadScene/UnloadScene，事件参数：<code>LoadSceneSuccess/Failure/Update/DependencyAsset</code>，<code>UnloadSceneSuccess/Failure</code>。</p>
+
+<hr>
+
+<h3 id="m-sound">5.9 Sound 声音</h3>
+<p>SoundGroup 管理 SoundAgent（具体的播放代理），支持优先级、淡入淡出、3D 参数 <code>PlaySoundParams</code>。</p>
+
+<hr>
+
+<h3 id="m-network">5.10 Network 网络</h3>
+<p>支持多通道(NetworkChannel)、TCP 同/异步，提供 Packet/PacketHeader 抽象，自动处理粘包：</p>
+<div class="mermaid">
+flowchart LR
+  App[业务] -->|Send| Ch[NetworkChannel]
+  Ch -->|序列化| SS[SendState]
+  SS --> Sock[(Socket)]
+  Sock --> RS[ReceiveState]
+  RS -->|解 PacketHeader| PH[IPacketHandler]
+  PH --> App
+  Ch -.-> HB[HeartBeatState 心跳]
+</div>
+
+<hr>
+
+<h3 id="m-download">5.11 Download 下载</h3>
+<p>由 <code>DownloadManager + DownloadAgent + DownloadTask + DownloadCounter</code> 组成。<br>
+- <code>AddDownload</code> 创建任务进队列；<br>
+- 多个 <code>DownloadAgent</code> 并发处理；<br>
+- <code>DownloadCounter</code> 统计实时速度（基于滑动窗口节点）；<br>
+- 事件：<code>Start/Update/Success/Failure</code>。</p>
+
+<hr>
+
+<h3 id="m-webrequest">5.12 WebRequest 请求</h3>
+<p>结构与 Download 几乎一致：<code>WebRequestManager + Agent + Task</code>，主要做 GET/POST 接口请求。</p>
+
+<hr>
+
+<h3 id="m-config">5.13 Config 全局配置</h3>
+<p>解决"全局开关/数值"。提供 <code>Bool/Int/Float/String</code> 四类，支持从字节流/文本异步加载。<br>
+区别于 DataTable：DataTable 是结构化的"行表"，Config 是<strong>扁平的键值</strong>。</p>
+
+<hr>
+
+<h3 id="m-datatable">5.14 DataTable 数据表</h3>
+<p>对应 Excel 配置：<code>DataTableManager.CreateDataTable&lt;T&gt;()</code> 创建一张表，<code>T</code> 是实现 <code>IDataRow</code> 的行类型。常配合代码生成器使用。</p>
+
+<hr>
+
+<h3 id="m-datanode">5.15 DataNode 数据结点</h3>
+<p>类似带路径的 KV 仓库：<code>"Player.Bag.GoldCount"</code>，支持 <code>SetData</code>/<code>GetData</code>，可以挂任意 <code>Variable</code>。</p>
+
+<hr>
+
+<h3 id="m-localization">5.16 Localization 本地化</h3>
+<p>语言枚举 <code>Language</code>（涵盖几十种语言），<code>GetString(key, args...)</code> 支持参数化文本，配合资源系统按语言加载文本表。</p>
+
+<hr>
+
+<h3 id="m-setting">5.17 Setting 玩家设置</h3>
+<p>负责<strong>玩家本地偏好持久化</strong>（如音量、语言、画质），上层一般以 PlayerPrefs/文件方式实现 <code>ISettingHelper</code>。</p>
+
+<hr>
+
+<h3 id="m-filesystem">5.18 FileSystem 虚拟文件系统</h3>
+<p>这是相当独特的一个模块：把多个小文件打包到一个<strong>大文件</strong>里，运行时按"虚拟路径"读取。<br>
+组成：<code>HeaderData</code>(头) + 字符串区(<code>StringData</code>) + 块表(<code>BlockData</code>) + 数据区。<br>
+作用：减少 IO 数、加密保护、热更增量包。</p>
+
+<hr>
+
+<h3 id="m-debugger">5.19 Debugger 调试器</h3>
+<p>提供运行时调试窗口，按 <code>DebuggerWindowGroup</code> 树状组织 <code>IDebuggerWindow</code>。常见窗口：FPS、内存、对象池统计、引用池统计、设置查看器等。</p>
+
+<hr>
+
+<h3 id="m-utility">5.20 Utility 工具集</h3>
+<table>
+<thead><tr><th>子工具</th><th>能力</th></tr></thead>
+<tbody>
+<tr><td><code>Utility.Assembly</code></td><td>反射程序集、查找派生类型</td></tr>
+<tr><td><code>Utility.Compression</code></td><td>压缩/解压（接口化，需提供 Helper）</td></tr>
+<tr><td><code>Utility.Converter</code></td><td>类型转换、字节序处理</td></tr>
+<tr><td><code>Utility.Encryption</code></td><td>异或加解密</td></tr>
+<tr><td><code>Utility.Json</code></td><td>JSON 序列化/反序列化（接口化）</td></tr>
+<tr><td><code>Utility.Marshal</code></td><td>非托管内存缓存与拷贝（性能）</td></tr>
+<tr><td><code>Utility.Path</code></td><td>路径规范化、相对绝对转换</td></tr>
+<tr><td><code>Utility.Random</code></td><td>线程安全随机数</td></tr>
+<tr><td><code>Utility.Text</code></td><td>StringBuilder 池、Format、字符串处理</td></tr>
+<tr><td><code>Utility.Verifier</code></td><td>CRC32 校验</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ========== 典型流程 ========== -->
+<section id="flow-startup">
+<h2>6. 典型流程示例</h2>
+
+<h3 id="flow-startup-1">6.1 游戏启动到进入主城（基于 Procedure）</h3>
+<div class="mermaid">
+flowchart TD
+  P0[ProcedureLaunch<br/>读取配置/初始化]
+  P1[ProcedureSplash<br/>启动画面]
+  P2[ProcedureCheckVersion<br/>对比版本号]
+  P3{需要更新?}
+  P4[ProcedureUpdateResources<br/>下载差异]
+  P5[ProcedureVerifyResources<br/>CRC 校验]
+  P6[ProcedurePreload<br/>预加载关键资源]
+  P7[ProcedureLogin<br/>登录服务器]
+  P8[ProcedureMain<br/>进入主城]
+  P0-->P1-->P2-->P3
+  P3 -- 是 --> P4 --> P5 --> P6
+  P3 -- 否 --> P6
+  P6 --> P7 --> P8
+</div>
+
+<h3 id="flow-resource">6.2 资源加载完整流程</h3>
+<div class="mermaid">
+sequenceDiagram
+  participant Biz as 业务
+  participant RM as ResourceManager
+  participant RL as ResourceLoader
+  participant TP as TaskPool
+  participant Agent as LoadResourceAgent
+  participant Helper as ILoadResourceAgentHelper
+
+  Biz->>RM: LoadAsset("XX.prefab", callbacks)
+  RM->>RL: 解析 AssetInfo / ResourceInfo
+  RL->>TP: AddTask(LoadAssetTask)
+  TP->>Agent: 分配空闲代理
+  Agent->>Helper: ReadFile / LoadAsset
+  Helper-->>Agent: 完成回调
+  Agent->>RL: Done=true 通知
+  RL->>Biz: LoadAssetSuccessCallback(asset)
+</div>
+
+<h3 id="flow-ui">6.3 UI 打开流程</h3>
+<div class="mermaid">
+sequenceDiagram
+  participant Biz
+  participant UIM as UIManager
+  participant Res as ResourceManager
+  participant Pool as ObjectPool
+
+  Biz->>UIM: OpenUIForm("MainMenu", "Default")
+  UIM->>Pool: Spawn(MainMenu)
+  alt 池中存在
+    Pool-->>UIM: 直接返回 UIForm
+  else 池中不存在
+    UIM->>Res: LoadAsset("MainMenu.prefab")
+    Res-->>UIM: asset
+    UIM->>Pool: Register(asset 包装)
+  end
+  UIM->>UIM: AddToUIGroup("Default") + 重排深度
+  UIM-->>Biz: OpenUIFormSuccessEventArgs
+</div>
+
+</section>
+
+<!-- ========== 设计模式 ========== -->
+<section id="design">
+<h2>7. 框架中使用的设计模式</h2>
+<table>
+<thead><tr><th>模式</th><th>体现</th></tr></thead>
+<tbody>
+<tr><td>外观/服务定位器</td><td><code>GameFrameworkEntry.GetModule&lt;T&gt;()</code> 统一获取所有 Manager</td></tr>
+<tr><td>桥接/适配器</td><td>所有 <code>IXxxHelper</code> 把"引擎相关"行为下沉到上层适配层</td></tr>
+<tr><td>对象池</td><td><code>ReferencePool</code> + <code>ObjectPoolManager</code> 双层池</td></tr>
+<tr><td>状态模式</td><td><code>Fsm</code>，<code>Procedure</code> 是其特化</td></tr>
+<tr><td>观察者/发布订阅</td><td><code>EventManager</code> + <code>EventPool</code></td></tr>
+<tr><td>命令模式</td><td><code>TaskBase</code> 抽象任务、由 Agent 统一执行</td></tr>
+<tr><td>组合模式</td><td><code>DataNode</code>、<code>DebuggerWindowGroup</code> 树形结构</td></tr>
+<tr><td>策略</td><td><code>ResourceMode</code>、<code>EventPoolMode</code> 等枚举切换不同策略</td></tr>
+<tr><td>分部类(partial)</td><td>大型 Manager 内含多个 partial 子类（如 ResourceManager 拆成 30+ 文件）</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ========== 学习路径 ========== -->
+<section id="path">
+<h2>8. 推荐学习路径</h2>
+
+<h3>🟢 第一阶段：理解骨架（约 2~3 小时）</h3>
+<ol>
+  <li>读 <code>Base/GameFrameworkEntry.cs</code> + <code>Base/GameFrameworkModule.cs</code> 弄懂"模块如何被注册和驱动"。</li>
+  <li>读 <code>Base/ReferencePool/</code> 整个目录，弄懂"为什么处处都要 IReference"。</li>
+  <li>读 <code>Base/EventPool/</code>，搞懂事件如何线程安全地分发。</li>
+</ol>
+
+<h3>🟡 第二阶段：理解三大支柱（约 3~5 小时）</h3>
+<ol>
+  <li><code>Fsm</code> 模块：理解 <code>FsmState&lt;T&gt;</code> 的生命周期、<code>ChangeState</code> 工作方式。</li>
+  <li><code>Procedure</code>：发现它就是一个特化的 FSM。</li>
+  <li><code>ObjectPool</code>：理解 <code>ObjectBase</code> + <code>Spawn/Unspawn/Release</code>，自动释放策略。</li>
+</ol>
+
+<h3>🔵 第三阶段：理解资源管线（约 5~8 小时，难点）</h3>
+<ol>
+  <li>先看 <code>Base/TaskPool/</code> 整个目录，搞懂任务-代理调度模型。</li>
+  <li>再看 <code>Resource/IResourceManager.cs</code> 接口，了解全部能力。</li>
+  <li>按以下顺序串起子系统：<br>
+     <code>VersionListProcessor → ResourceChecker → ResourceUpdater → ResourceVerifier → ResourceLoader</code></li>
+  <li>看 <code>FileSystem</code> 如何把多个小文件打成一个大包。</li>
+</ol>
+
+<h3>🟣 第四阶段：业务模块举一反三（按需）</h3>
+<ul>
+  <li>UI、Entity、Scene、Sound：<strong>套路相同</strong>—— 都用 <code>ObjectPool</code> + <code>Resource</code> 异步加载 + 事件通知。看一个，其余即可类推。</li>
+  <li>Network：理解 <code>PacketHeader → Packet → IPacketHandler</code> 的处理链。</li>
+  <li>Download / WebRequest：结构与 ResourceLoader 极相似（任务+代理）。</li>
+</ul>
+
+<h3>🟤 第五阶段：实战</h3>
+<ol>
+  <li>找一个 <a href="https://github.com/EllanJiang/StarForce" target="_blank">StarForce</a> 这种官方示例 Unity 工程，搭起来跑起来。</li>
+  <li>新增一个自己的 Procedure（比如 <code>ProcedureGuide</code>），让它在 Login 之后插入。</li>
+  <li>新增一个自己的 EventArgs，验证 EventManager 流程。</li>
+  <li>修改一个 DataTable / Localization 试试热更替换。</li>
+</ol>
+
+<div class="tip">
+🎯 <b>学习心法</b>：GameFramework 的所有模块几乎都遵循同一组"约定"——
+<br>① 接口对外、实现内部 sealed； 
+<br>② 引擎相关下沉到 IXxxHelper； 
+<br>③ 异步操作走 TaskPool/EventPool； 
+<br>④ 高频对象走 ReferencePool/ObjectPool； 
+<br>⑤ 流程类逻辑走 Fsm/Procedure。<br>
+<b>看懂一个模块就等于看懂一类模块。</b>
+</div>
+
+</section>
+
+<!-- ========== 参考 ========== -->
+<section id="ref">
+<h2>9. 参考资料</h2>
+<ul>
+  <li>官方主页：<a href="https://gameframework.cn/" target="_blank">https://gameframework.cn/</a></li>
+  <li>作者：Jiang Yin（艾兰）</li>
+  <li>典型 Unity 适配项目：<code>UnityGameFramework</code></li>
+  <li>示例游戏：<code>StarForce</code></li>
+</ul>
+<p style="text-align:center;color:var(--c-sub);margin-top:30px">
+  📘 本文档基于代码静态解析自动生成，目录：<br>
+  <code>h:/GameFramework/Docs/</code>
+</p>
+</section>
+
+</main>
+</div>
+</body>
+</html>
